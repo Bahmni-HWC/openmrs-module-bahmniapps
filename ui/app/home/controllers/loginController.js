@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('bahmni.home')
-    .controller('LoginController', ['$rootScope', '$scope', '$window', '$location', 'sessionService', 'initialData', 'spinner', '$q', '$stateParams', '$bahmniCookieStore', 'localeService', '$translate', 'userService', 'auditLogService',
-        function ($rootScope, $scope, $window, $location, sessionService, initialData, spinner, $q, $stateParams, $bahmniCookieStore, localeService, $translate, userService, auditLogService) {
+    .controller('LoginController', ['$rootScope', '$scope', '$window', '$location', 'sessionService', 'initialData', 'spinner', '$q', '$stateParams', '$bahmniCookieStore', 'localeService', '$translate', 'userService', 'auditLogService', '$state',
+        function ($rootScope, $scope, $window, $location, sessionService, initialData, spinner, $q, $stateParams, $bahmniCookieStore, localeService, $translate, userService, auditLogService, $state) {
             var redirectUrl = $location.search()['from'];
             var landingPagePath = "/dashboard";
             var loginPagePath = "/login";
@@ -140,20 +140,18 @@ angular.module('bahmni.home')
                             deferrable.resolve(data);
                             return;
                         }
-                        sessionService.updateSession($scope.loginInfo.currentLocation, null).then(function () {
-                            sessionService.loadCredentials().then(function () {
-                                onSuccessfulAuthentication();
-                                $rootScope.currentUser.addDefaultLocale($scope.selectedLocale);
-                                userService.savePreferences().then(
-                                    function () { deferrable.resolve(); },
-                                    function (error) { deferrable.reject(error); }
-                                );
-                                logAuditForLoginAttempts("USER_LOGIN_SUCCESS");
-                            }, function (error) {
-                                $scope.errorMessageTranslateKey = error;
-                                deferrable.reject(error);
-                                logAuditForLoginAttempts("USER_LOGIN_FAILED", true);
-                            });
+                        sessionService.loadCredentials().then(function () {
+                            onSuccessfulAuthentication();
+                            $rootScope.currentUser.addDefaultLocale($scope.selectedLocale);
+                            userService.savePreferences().then(
+                                function () { deferrable.resolve(); },
+                                function (error) { deferrable.reject(error); }
+                            );
+                            logAuditForLoginAttempts("USER_LOGIN_SUCCESS");
+                        }, function (error) {
+                            $scope.errorMessageTranslateKey = error;
+                            deferrable.reject(error);
+                            logAuditForLoginAttempts("USER_LOGIN_FAILED", true);
                         });
                     },
                     function (error) {
@@ -211,7 +209,7 @@ angular.module('bahmni.home')
                                 }
                             });
                         } else {
-                            $location.url(landingPagePath);
+                            $state.go('loginLocation', {});
                         }
                     }
                 );
