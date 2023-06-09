@@ -50,4 +50,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           file: package/docker/Dockerfile
           push: true
-          tags: bahmni/bahmni-web:${{ env.ARTIFACT_VERSION }},bahmnihwc/bahmni-web:latest
+          tags: bahmnihwc/bahmni-web:${{ env.ARTIFACT_VERSION }},bahmnihwc/bahmni-web:latest
