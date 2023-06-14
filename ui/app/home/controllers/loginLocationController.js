@@ -18,7 +18,6 @@ angular.module('bahmni.home')
                 return localTimeZone;
             };
 
-
             var userLoginLocations = function () {
                 var loginLocations = localStorage.getItem("loginLocations");
                 return loginLocations ? JSON.parse(loginLocations) : [];

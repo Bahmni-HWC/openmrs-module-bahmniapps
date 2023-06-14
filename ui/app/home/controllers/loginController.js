@@ -124,10 +124,10 @@ angular.module('bahmni.home')
 
             var saveUserAssignedLocationsToLocalStorage = function () {
                 var userAssignedLocations = $rootScope.currentUser.provider.attributes
-                  .filter (function(attribute) {
+                  .filter(function (attribute) {
                       return attribute.attributeType.display === "Login Locations";
                   })
-                  .map (function(attribute) {
+                  .map(function (attribute) {
                       return { display: attribute.value.name, uuid: attribute.value.uuid };
                   });
 
