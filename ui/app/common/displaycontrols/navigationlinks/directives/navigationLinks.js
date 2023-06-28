@@ -44,6 +44,11 @@ angular.module('bahmni.common.displaycontrol.navigationlinks')
                     "name": "labEntry",
                     "translationKey": "LAB_ENTRY_KEY",
                     "url": "/lab/patient/{{patientUuid}}"
+                },
+                {
+                    "name": "eSanjeevani",
+                    "translationKey": "ESANJEEVANI_KEY",
+                    "url": "https://esanjeevani.mohfw.gov.in/#/user/signin"
                 }
             ];
 
