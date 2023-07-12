@@ -129,7 +129,7 @@ Bahmni.Clinical.DrugOrderViewModel = function (config, proto, encounterDate) {
         this.effectiveStartDate = this.effectiveStartDate || this.encounterDate;
     }
 
-    this.isUniformFrequency = true;
+    this.isUniformFrequency = false;
     this.showExtraInfo = false;
 
     this.overlappingScheduledWith = function (otherDrugOrder) {

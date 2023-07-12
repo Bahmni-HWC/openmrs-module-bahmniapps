@@ -1053,7 +1053,7 @@ describe("drugOrderViewModel", function () {
                     doseUnits: "Some"
                 };
 
-                expect(treatment.isUniformDoseRequired()).toBeTruthy();
+                expect(treatment.isUniformDoseRequired()).toBeFalsy();
             });
 
 
@@ -1074,7 +1074,7 @@ describe("drugOrderViewModel", function () {
                     doseUnits: "Some"
                 };
 
-                expect(treatment.isUniformDoseRequired()).toBeTruthy();
+                expect(treatment.isUniformDoseRequired()).toBeFalsy();
             });
 
             it("should not throw validation error when route is present in routesToMakeDoseSectionNonMandatory but units are defaulted", function () {
@@ -1101,7 +1101,7 @@ describe("drugOrderViewModel", function () {
                 treatment.uniformDosingType.dose = undefined;
                 treatment.uniformDosingType.doseUnits = "ml";
 
-                expect(treatment.isMantissaRequired()).toBeTruthy();
+                expect(treatment.isMantissaRequired()).toBeFalsy();
 
                 treatmentConfig.inputOptionsConfig.routesToMakeDoseSectionNonMandatory = ["Topical", "Inhalation"];
                 var treatment = sampleTreatment(treatmentConfig, null, Bahmni.Common.Util.DateUtil.now());
