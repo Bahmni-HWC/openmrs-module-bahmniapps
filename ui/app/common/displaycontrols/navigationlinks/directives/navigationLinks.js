@@ -1,7 +1,7 @@
 "use strict";
 
 angular.module('bahmni.common.displaycontrol.navigationlinks')
-    .directive('navigationLinks', ['$state', 'appService', function ($state, appService) {
+    .directive('navigationLinks', ['$state', 'appService', 'auditLogService', function ($state, appService, auditLogService) {
         var controller = function ($scope) {
             if ((!$scope.params.showLinks && !$scope.params.customLinks) ||
                 ($scope.params.showLinks && $scope.params.customLinks &&
@@ -67,6 +67,9 @@ angular.module('bahmni.common.displaycontrol.navigationlinks')
             $scope.getUrl = function (link) {
                 var url = getFormattedURL(link);
                 window.open(url, link.title);
+                if (url.includes("/bahmni_config/esanjeevani")) {
+                    logAuditForESanjeevaniVisit();
+                }
             };
 
             $scope.showUrl = function (link) {
@@ -84,6 +87,10 @@ angular.module('bahmni.common.displaycontrol.navigationlinks')
 
             var getFormattedURL = function (link) {
                 return appService.getAppDescriptor().formatUrl(link.url, $scope.linkParams);
+            };
+
+            var logAuditForESanjeevaniVisit = function () {
+                auditLogService.log($scope.linkParams.patientUuid, "ACCESSED_E_SANJEEVANI", undefined, "MODULE_LABEL_E_SANJEEVANI");
             };
 
             var getParamsToBeReplaced = function (link) {

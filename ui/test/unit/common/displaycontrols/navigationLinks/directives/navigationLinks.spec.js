@@ -1,7 +1,7 @@
 'use strict';
 
 describe('NavigationalLinks DisplayControl', function () {
-    var scope, rootScope, filter, httpBackend, compile, q, compiledScope, appService, compileDirective;
+    var scope, rootScope, filter, httpBackend, compile, q, compiledScope, appService, compileDirective, auditLogService;
     var html = '<navigation-links params="section" link-params="linkParams"></navigation-links>';
     var mandatoryConfig = { sections: [{type: "General"}, {type: "Discharge Summary"}] };
     var linkParams = {patientUuid: "patientUuid", visitUuid: "visitUuid"};
@@ -13,6 +13,11 @@ describe('NavigationalLinks DisplayControl', function () {
             "title":"CONSULTATION_PAGE_KEY",
             "url": "../clinical/#/consultation/patient/{{patientUuid}}/concept-set-group/observations/",
             "icon": "C"
+        },
+        {
+            "title":"E_SANJEEVANI_PAGE_KEY",
+            "url": "/bahmni_config/esanjeevani?patientUuid={{patientUuid}}",
+            "icon": "E_SANJEEVANI"
         }
     ];
 
@@ -23,6 +28,7 @@ describe('NavigationalLinks DisplayControl', function () {
 
     beforeEach(module(function ($provide) {
         $provide.value('appService', appService);
+        $provide.value('auditLogService', auditLogService)
         $provide.value('spinner', spinner);
     }));
 
@@ -32,6 +38,7 @@ describe('NavigationalLinks DisplayControl', function () {
         httpBackend = $httpBackend;
         rootScope = $rootScope;
         appService = jasmine.createSpyObj('appService', ['loadConfig', 'loadMandatoryConfig', 'getAppDescriptor']);
+        auditLogService = jasmine.createSpyObj('auditLogService', ['log']);
         appService.loadMandatoryConfig.and.returnValue(specUtil.respondWith({data: mandatoryConfig}));
         appService.getAppDescriptor.and.returnValue(appDescriptor);
         q = $q;
