@@ -47,7 +47,7 @@ angular.module('bahmni.common.displaycontrol.bacteriologyresults')
                         var conceptsConfig = appService.getAppDescriptor().getConfigValue("conceptSetUI") || {};
                         var dontSortByObsDateTime = true;
                         _.forEach($scope.observations, function (observation) {
-                            $scope.specimens.push(specimenMapper.mapObservationToSpecimen(observation, $scope.allSamples, conceptsConfig, dontSortByObsDateTime));
+                            $scope.specimens.push(specimenMapper.mapObservationToSpecimen(observation, $scope.allSamples, conceptsConfig, dontSortByObsDateTime, $translate));
                         });
                     } else {
                         $scope.specimens = [];

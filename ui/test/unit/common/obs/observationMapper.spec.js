@@ -2,8 +2,25 @@
 
 describe("ObservationMapper", function () {
     var ObservationMapper = Bahmni.Common.Obs.ObservationMapper;
+    var translate;
+    var translatedMessages = {
+        "CHIEF_COMPLAINT_DATA_CONCEPT_NAME_KEY": "Chief Complaint Record",
+        "CHIEF_COMPLAINT_CODED_KEY": "Chief Complaint Coded",
+        "SIGN_SYMPTOM_DURATION_KEY": "Sign/symptom duration",
+        "CHIEF_COMPLAINT_DURATION_UNIT_KEY": "Chief Complaint Duration",
+        "CHIEF_COMPLAINT_TEXT_KEY": "Chief complaint (text)",
+        "CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_KEY": "Other generic",
+        "CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_TEMPLATE_KEY": "{{chiefComplaint}} ({{chiefComplaintText}}) since {{duration}} {{unit}}",
+        "CHIEF_COMPLAINT_DATA_WITHOUT_OTHER_CONCEPT_TEMPLATE_KEY": "{{chiefComplaint}} since {{duration}} {{unit}}"
+    };
+
+    translate = jasmine.createSpyObj('$translate', ['instant']);
+    translate.instant.and.callFake(function (key) {
+        return translatedMessages[key];
+    });
 
     describe("should map observation", function () {
+
         it("should map openmrs observation types - coded, boolean", function () {
             var bahmniObservations = [
                 {
@@ -22,7 +39,7 @@ describe("ObservationMapper", function () {
                     ],
                     "concept": {"shortName": null, "name": "Chemotherapy", "set": true, "units": null, "conceptClass": "Misc", "dataType": "N/A"} }
             ];
-            var mappedObservation = new ObservationMapper().map(bahmniObservations, {});
+            var mappedObservation = new ObservationMapper().map(bahmniObservations, {}, null, translate);
             expect(mappedObservation.length).toBe(1);
             expect(mappedObservation[0] instanceof Bahmni.Common.Obs.Observation).toBe(true);
             expect(mappedObservation[0].groupMembers.length).toBe(2);
@@ -47,7 +64,7 @@ describe("ObservationMapper", function () {
                     "concept": {"shortName": null, "uuid": "134dc2f6-e045-4927-bf47-d18984a536b9", "name": "Histopathology", "conceptClass": "Misc", "dataType": "N/A"}
                 }
             ];
-            var mappedObservation = new ObservationMapper().map(bahmniObservations, {"Pathologic Diagnosis": {"multiSelect": true}});
+            var mappedObservation = new ObservationMapper().map(bahmniObservations, {"Pathologic Diagnosis": {"multiSelect": true}}, null, translate);
             expect(mappedObservation.length).toBe(1);
             expect(mappedObservation[0] instanceof Bahmni.Common.Obs.Observation).toBe(true);
             expect(mappedObservation[0].groupMembers.length).toBe(1);
@@ -77,7 +94,7 @@ describe("ObservationMapper", function () {
                     ] 
                 }
             ];
-            var mappedObservation = new ObservationMapper().map(bahmniObservations, {"Pathologic Diagnosis": {"multiSelect": true}});
+            var mappedObservation = new ObservationMapper().map(bahmniObservations, {"Pathologic Diagnosis": {"multiSelect": true}}, null, translate);
             expect(mappedObservation.length).toBe(1);
             expect(mappedObservation[0] instanceof Bahmni.Common.Obs.Observation).toBe(true);
             expect(mappedObservation[0].groupMembers.length).toBe(1);
@@ -104,7 +121,7 @@ describe("ObservationMapper", function () {
                     "concept": {"shortName": null, "name": "Receptor Status", "set": true, "units": null, "conceptClass": "Misc", "dataType": "N/A"}}
 
             ];
-            var mappedObservation = new ObservationMapper().map(bahmniObservations, {"Receptor Status": {"grid": true}});
+            var mappedObservation = new ObservationMapper().map(bahmniObservations, {"Receptor Status": {"grid": true}}, null, translate);
             expect(mappedObservation.length).toBe(1);
             expect(mappedObservation[0] instanceof Bahmni.Common.Obs.GridObservation).toBe(true);
             expect(mappedObservation[0].value).toBe("ER-, PR+");
@@ -183,7 +200,7 @@ describe("ObservationMapper", function () {
                     "formFieldPath": "form2.1/2-0"
                 }
             ];
-            var mappedObservation = new ObservationMapper().map(bahmniObservations, {"Pathologic Diagnosis": {"multiSelect": true}});
+            var mappedObservation = new ObservationMapper().map(bahmniObservations, {"Pathologic Diagnosis": {"multiSelect": true}}, null, translate);
             expect(mappedObservation.length).toBe(3);
             expect(mappedObservation[0] instanceof Bahmni.Common.Obs.Observation).toBe(true);
             expect(mappedObservation[0].groupMembers.length).toBe(0);
@@ -254,8 +271,7 @@ describe("ObservationMapper", function () {
                 "formFieldPath": "form2.1/2-0"
             }
         ];
-        var mappedObservation = new ObservationMapper().map(bahmniObservations,
-            {"Pathologic Diagnosis": {"multiSelect": true}});
+        var mappedObservation = new ObservationMapper().map(bahmniObservations, {"Pathologic Diagnosis": {"multiSelect": true}}, null, translate);
         expect(mappedObservation.length).toBe(3);
         expect(mappedObservation[0] instanceof Bahmni.Common.Obs.MultiSelectObservation).toBe(true);
         expect(mappedObservation[0].groupMembers.length).toBe(2);

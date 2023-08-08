@@ -200,166 +200,166 @@ Bahmni.ConceptSet.ObservationMapper = function () {
     }
 
     var mapObservationGroupMembers = function (observations, parentConcept, conceptSetConfig) {
-      var observationGroupMembers = [];
-      var conceptSetMembers = parentConcept.setMembers;
-      conceptSetMembers.forEach(function (memberConcept) {
-          var savedObservations = findInSavedObservation(memberConcept, observations);
-          var configForConcept = conceptSetConfig[memberConcept.name.name] || {};
-          var numberOfNodes = configForConcept.multiple || 1;
-          for (var i = savedObservations.length - 1; i >= 0; i--) {
-              observationGroupMembers.push(mapObservation(memberConcept, savedObservations[i], conceptSetConfig, parentConcept));
-          }
-          for (var i = 0; i < numberOfNodes - savedObservations.length; i++) {
-              observationGroupMembers.push(mapObservation(memberConcept, null, conceptSetConfig, parentConcept));
-          }
-      });
-      return observationGroupMembers;
-  };
+        var observationGroupMembers = [];
+        var conceptSetMembers = parentConcept.setMembers;
+        conceptSetMembers.forEach(function (memberConcept) {
+            var savedObservations = findInSavedObservation(memberConcept, observations);
+            var configForConcept = conceptSetConfig[memberConcept.name.name] || {};
+            var numberOfNodes = configForConcept.multiple || 1;
+            for (var i = savedObservations.length - 1; i >= 0; i--) {
+                observationGroupMembers.push(mapObservation(memberConcept, savedObservations[i], conceptSetConfig, parentConcept));
+            }
+            for (var i = 0; i < numberOfNodes - savedObservations.length; i++) {
+                observationGroupMembers.push(mapObservation(memberConcept, null, conceptSetConfig, parentConcept));
+            }
+        });
+        return observationGroupMembers;
+    };
 
-  var getDatatype = function (concept) {
-      if (concept.dataType) {
-          return concept.dataType;
-      }
-      return concept.datatype && concept.datatype.name;
-  };
+    var getDatatype = function (concept) {
+        if (concept.dataType) {
+            return concept.dataType;
+        }
+        return concept.datatype && concept.datatype.name;
+    };
 
 // tODO : remove conceptUIConfig
-  var newObservation = function (concept, savedObs, conceptSetConfig, mappedGroupMembers) {
-      var observation = buildObservation(concept, savedObs, mappedGroupMembers);
-      var obs = new Bahmni.ConceptSet.Observation(observation, savedObs, conceptSetConfig, mappedGroupMembers);
-      if (getDatatype(concept) === "Boolean") {
-          obs = new Bahmni.ConceptSet.BooleanObservation(obs, conceptSetConfig);
-      }
-      return obs;
-  };
+    var newObservation = function (concept, savedObs, conceptSetConfig, mappedGroupMembers) {
+        var observation = buildObservation(concept, savedObs, mappedGroupMembers);
+        var obs = new Bahmni.ConceptSet.Observation(observation, savedObs, conceptSetConfig, mappedGroupMembers);
+        if (getDatatype(concept) === "Boolean") {
+            obs = new Bahmni.ConceptSet.BooleanObservation(obs, conceptSetConfig);
+        }
+        return obs;
+    };
 
 // TODO : remove conceptUIConfig
-  var newObservationNode = function (concept, savedObsNode, conceptSetConfig, mappedGroupMembers) {
-      var observation = buildObservation(concept, savedObsNode, mappedGroupMembers);
-      return new Bahmni.ConceptSet.ObservationNode(observation, savedObsNode, conceptSetConfig, concept);
-  };
+    var newObservationNode = function (concept, savedObsNode, conceptSetConfig, mappedGroupMembers) {
+        var observation = buildObservation(concept, savedObsNode, mappedGroupMembers);
+        return new Bahmni.ConceptSet.ObservationNode(observation, savedObsNode, conceptSetConfig, concept);
+    };
 
-  var showAddMoreButton = function (rootObservation) {
-      var observation = this;
-      var lastObservationByLabel = _.findLast(rootObservation.groupMembers, {
-          label: observation.label
-      });
-      return lastObservationByLabel.uuid === observation.uuid;
-  };
+    var showAddMoreButton = function (rootObservation) {
+        var observation = this;
+        var lastObservationByLabel = _.findLast(rootObservation.groupMembers, {
+            label: observation.label
+        });
+        return lastObservationByLabel.uuid === observation.uuid;
+    };
 
-  function buildObservation (concept, savedObs, mappedGroupMembers) {
-      var comment = savedObs ? savedObs.comment : null;
-      return {
-          concept: conceptMapper.map(concept),
-          units: concept.units,
-          label: getLabel(concept),
-          possibleAnswers: concept.answers,
-          groupMembers: mappedGroupMembers,
-          comment: comment,
-          showAddMoreButton: showAddMoreButton
-      };
-  }
+    function buildObservation (concept, savedObs, mappedGroupMembers) {
+        var comment = savedObs ? savedObs.comment : null;
+        return {
+            concept: conceptMapper.map(concept),
+            units: concept.units,
+            label: getLabel(concept),
+            possibleAnswers: concept.answers,
+            groupMembers: mappedGroupMembers,
+            comment: comment,
+            showAddMoreButton: showAddMoreButton
+        };
+    }
 
-  var createObservationForDisplay = function (observation, concept, $translate) {
-      if (observation.value == null) {
-          return;
-      }
-      var observationValue = getObservationDisplayValue(observation);
-      observationValue = observation.durationObs ? getDurationDisplayValue(observationValue, observation.durationObs, $translate) : observationValue;
-      return {
-          value: observationValue,
-          abnormalObs: observation.abnormalObs,
-          duration: observation.durationObs,
-          provider: observation.provider,
-          label: getLabel(observation.concept),
-          observationDateTime: observation.observationDateTime,
-          concept: concept,
-          comment: observation.comment,
-          uuid: observation.uuid
-      };
-  };
+    var createObservationForDisplay = function (observation, concept, $translate) {
+        if (observation.value == null) {
+            return;
+        }
+        var observationValue = getObservationDisplayValue(observation);
+        observationValue = observation.durationObs ? getDurationDisplayValue(observationValue, observation.durationObs, $translate) : observationValue;
+        return {
+            value: observationValue,
+            abnormalObs: observation.abnormalObs,
+            duration: observation.durationObs,
+            provider: observation.provider,
+            label: getLabel(observation.concept),
+            observationDateTime: observation.observationDateTime,
+            concept: concept,
+            comment: observation.comment,
+            uuid: observation.uuid
+        };
+    };
 
-  var getObservationDisplayValue = function (observation) {
-      if (observation.isBoolean || observation.type === "Boolean") {
-          return observation.value === true ? "Yes" : "No";
-      }
-      if (!observation.value) {
-          return "";
-      }
-      if (typeof observation.value.name === "object") {
-          var valueConcept = conceptMapper.map(observation.value);
-          return valueConcept.shortName || valueConcept.name;
-      }
-      return (observation.value.shortName || observation.value.name || observation.value);
-  };
+    var getObservationDisplayValue = function (observation) {
+        if (observation.isBoolean || observation.type === "Boolean") {
+            return observation.value === true ? "Yes" : "No";
+        }
+        if (!observation.value) {
+            return "";
+        }
+        if (typeof observation.value.name === "object") {
+            var valueConcept = conceptMapper.map(observation.value);
+            return valueConcept.shortName || valueConcept.name;
+        }
+        return (observation.value.shortName || observation.value.name || observation.value);
+    };
 
-  var getObservationValue = function (groupMembers, $translate) {
-      var chiefComplaint = "";
-      var chiefComplaintText = "";
-      var symptomDuration = "";
-      var durationUnit = "";
-      _.forEach(groupMembers, function (member) {
-          if (member && member.has($translate.instant("CHIEF_COMPLAINT_CODED_KEY"))) {
-              chiefComplaint = member.get($translate.instant("CHIEF_COMPLAINT_CODED_KEY"));
-          }
-          if (member && member.has($translate.instant("CHIEF_COMPLAINT_TEXT_KEY"))) {
-              chiefComplaintText = member.get($translate.instant("CHIEF_COMPLAINT_TEXT_KEY"));
-          }
-          if (member && member.has($translate.instant("SIGN_SYMPTOM_DURATION_KEY"))) {
-              symptomDuration = member.get($translate.instant("SIGN_SYMPTOM_DURATION_KEY"));
-          }
-          if (member && member.has($translate.instant("CHIEF_COMPLAINT_DURATION_UNIT_KEY"))) {
-              durationUnit = member.get($translate.instant("CHIEF_COMPLAINT_DURATION_UNIT_KEY"));
-          }
-      });
-      return getChiefComplaintDisplayValue(chiefComplaint, chiefComplaintText, symptomDuration, durationUnit, $translate);
-  };
+    var getObservationValue = function (groupMembers, $translate) {
+        var chiefComplaint = "";
+        var chiefComplaintText = "";
+        var symptomDuration = "";
+        var durationUnit = "";
+        _.forEach(groupMembers, function (member) {
+            if (member && member.has($translate.instant("CHIEF_COMPLAINT_CODED_KEY"))) {
+                chiefComplaint = member.get($translate.instant("CHIEF_COMPLAINT_CODED_KEY"));
+            }
+            if (member && member.has($translate.instant("CHIEF_COMPLAINT_TEXT_KEY"))) {
+                chiefComplaintText = member.get($translate.instant("CHIEF_COMPLAINT_TEXT_KEY"));
+            }
+            if (member && member.has($translate.instant("SIGN_SYMPTOM_DURATION_KEY"))) {
+                symptomDuration = member.get($translate.instant("SIGN_SYMPTOM_DURATION_KEY"));
+            }
+            if (member && member.has($translate.instant("CHIEF_COMPLAINT_DURATION_UNIT_KEY"))) {
+                durationUnit = member.get($translate.instant("CHIEF_COMPLAINT_DURATION_UNIT_KEY"));
+            }
+        });
+        return getChiefComplaintDisplayValue(chiefComplaint, chiefComplaintText, symptomDuration, durationUnit, $translate);
+    };
 
-  var getGroupMemberValue = function (observation, $translate) {
-      const chiefComplaintCoded = $translate.instant("CHIEF_COMPLAINT_CODED_KEY");
-      const chiefComplaintText = $translate.instant("CHIEF_COMPLAINT_TEXT_KEY");
-      const symptomDuration = $translate.instant("SIGN_SYMPTOM_DURATION_KEY");
-      const durationUnit = $translate.instant("CHIEF_COMPLAINT_DURATION_UNIT_KEY");
-      if (typeof observation.concept === "object" && observation.concept.name === chiefComplaintCoded) {
-          if (observation.value.name === $translate.instant("CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_KEY")) {
-              return new Map().set(chiefComplaintCoded, observation.value.name);
-          }
-          return new Map().set(chiefComplaintCoded, getObservationDisplayValue(observation));
-      }
-      if (typeof observation.concept === "object" && observation.concept.name === chiefComplaintText) {
-          return new Map().set(chiefComplaintText, getObservationDisplayValue(observation));
-      }
-      if (typeof observation.concept === "object" && observation.concept.name === symptomDuration) {
-          return new Map().set(symptomDuration, getObservationDisplayValue(observation));
-      }
-      if (typeof observation.concept === "object" && observation.concept.name === durationUnit) {
-          return new Map().set(durationUnit, getObservationDisplayValue(observation));
-      }
-  };
+    var getGroupMemberValue = function (observation, $translate) {
+        const chiefComplaintCoded = $translate.instant("CHIEF_COMPLAINT_CODED_KEY");
+        const chiefComplaintText = $translate.instant("CHIEF_COMPLAINT_TEXT_KEY");
+        const symptomDuration = $translate.instant("SIGN_SYMPTOM_DURATION_KEY");
+        const durationUnit = $translate.instant("CHIEF_COMPLAINT_DURATION_UNIT_KEY");
+        if (typeof observation.concept === "object" && observation.concept.name === chiefComplaintCoded) {
+            if (observation.value.name === $translate.instant("CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_KEY")) {
+                return new Map().set(chiefComplaintCoded, observation.value.name);
+            }
+            return new Map().set(chiefComplaintCoded, getObservationDisplayValue(observation));
+        }
+        if (typeof observation.concept === "object" && observation.concept.name === chiefComplaintText) {
+            return new Map().set(chiefComplaintText, getObservationDisplayValue(observation));
+        }
+        if (typeof observation.concept === "object" && observation.concept.name === symptomDuration) {
+            return new Map().set(symptomDuration, getObservationDisplayValue(observation));
+        }
+        if (typeof observation.concept === "object" && observation.concept.name === durationUnit) {
+            return new Map().set(durationUnit, getObservationDisplayValue(observation));
+        }
+    };
 
-  var getChiefComplaintDisplayValue = function (chiefComplaint, chiefComplaintText, symptomDuration, durationUnit, $translate) {
-      if (chiefComplaint !== $translate.instant("CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_KEY")) {
-          return $translate.instant("CHIEF_COMPLAINT_DATA_WITHOUT_OTHER_CONCEPT_TEMPLATE_KEY", {chiefComplaint: chiefComplaint, duration: symptomDuration, unit: durationUnit});
-      } else {
-          return $translate.instant("CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_TEMPLATE_KEY", {chiefComplaint: chiefComplaint, chiefComplaintText: chiefComplaintText, duration: symptomDuration, unit: durationUnit});
-      }
-  };
+    var getChiefComplaintDisplayValue = function (chiefComplaint, chiefComplaintText, symptomDuration, durationUnit, $translate) {
+        if (chiefComplaint !== $translate.instant("CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_KEY")) {
+            return $translate.instant("CHIEF_COMPLAINT_DATA_WITHOUT_OTHER_CONCEPT_TEMPLATE_KEY", {chiefComplaint: chiefComplaint, duration: symptomDuration, unit: durationUnit});
+        } else {
+            return $translate.instant("CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_TEMPLATE_KEY", {chiefComplaint: chiefComplaint, chiefComplaintText: chiefComplaintText, duration: symptomDuration, unit: durationUnit});
+        }
+    };
 
-  var getDurationDisplayValue = function (chiefComplaint, duration, $translate) {
-      var durationForDisplay = Bahmni.Common.Util.DateUtil.convertToUnits(duration.value);
-      if (durationForDisplay["value"] && durationForDisplay["unitName"]) {
-          return getChiefComplaintDisplayValue(chiefComplaint, durationForDisplay["value"], durationForDisplay["unitName"], $translate);
-      }
-      return "";
-  };
+    var getDurationDisplayValue = function (chiefComplaint, duration, $translate) {
+        var durationForDisplay = Bahmni.Common.Util.DateUtil.convertToUnits(duration.value);
+        if (durationForDisplay["value"] && durationForDisplay["unitName"]) {
+            return getChiefComplaintDisplayValue(chiefComplaint, durationForDisplay["value"], durationForDisplay["unitName"], $translate);
+        }
+        return "";
+    };
 
-  this.getGridObservationDisplayValue = function (observation, $translate) {
-      var memberValues = _.compact(_.map(observation.groupMembers, function (member) { return getGroupMemberValue(member, $translate); }));
-      return getObservationValue(memberValues, $translate);
-  };
+    this.getGridObservationDisplayValue = function (observation, $translate) {
+        var memberValues = _.compact(_.map(observation.groupMembers, function (member) { return getGroupMemberValue(member, $translate); }));
+        return getObservationValue(memberValues, $translate);
+    };
 
-  var getLabel = function (concept) {
-      var mappedConcept = conceptMapper.map(concept);
-      return mappedConcept.shortName || mappedConcept.name;
-  };
+    var getLabel = function (concept) {
+        var mappedConcept = conceptMapper.map(concept);
+        return mappedConcept.shortName || mappedConcept.name;
+    };
 };

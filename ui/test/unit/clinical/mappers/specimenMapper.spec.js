@@ -2,8 +2,26 @@
 
 describe("SpecimenMapper", function () {
     var specimenMapper = new Bahmni.Clinical.SpecimenMapper();
+    var translate;
 
     describe("mapObservationToSpecimen", function () {
+
+        var translatedMessages = {
+            "CHIEF_COMPLAINT_DATA_CONCEPT_NAME_KEY": "Chief Complaint Record",
+            "CHIEF_COMPLAINT_CODED_KEY": "Chief Complaint Coded",
+            "SIGN_SYMPTOM_DURATION_KEY": "Sign/symptom duration",
+            "CHIEF_COMPLAINT_DURATION_UNIT_KEY": "Chief Complaint Duration",
+            "CHIEF_COMPLAINT_TEXT_KEY": "Chief complaint (text)",
+            "CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_KEY": "Other generic",
+            "CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_TEMPLATE_KEY": "{{chiefComplaint}} ({{chiefComplaintText}}) since {{duration}} {{unit}}",
+            "CHIEF_COMPLAINT_DATA_WITHOUT_OTHER_CONCEPT_TEMPLATE_KEY": "{{chiefComplaint}} since {{duration}} {{unit}}"
+        };
+    
+        var translate = jasmine.createSpyObj('$translate', ['instant']);
+        translate.instant.and.callFake(function (key) {
+            return translatedMessages[key];
+        });
+
         it("should map observation to specimen object", function () {
             var observationData = {
                 identifier: "138",
@@ -26,7 +44,7 @@ describe("SpecimenMapper", function () {
                 }
             };
 
-            var specimen = specimenMapper.mapObservationToSpecimen(observationData, undefined, {});
+            var specimen = specimenMapper.mapObservationToSpecimen(observationData, undefined, {}, null, translate);
             expect(specimen.specimenId).toBe(observationData.identifier);
             expect(specimen.specimenSource).toBe(observationData.type.name);
             expect(specimen.specimenCollectionDate).toBe(specimen.dateCollected);
@@ -74,7 +92,7 @@ describe("SpecimenMapper", function () {
                 }
             };
 
-            var specimen = specimenMapper.mapObservationToSpecimen(observationData, undefined, {}, true);
+            var specimen = specimenMapper.mapObservationToSpecimen(observationData, undefined, {}, true, translate);
             expect(specimen.specimenId).toBe(observationData.identifier);
             expect(specimen.specimenSource).toBe(observationData.type.name);
             expect(specimen.specimenCollectionDate).toBe(specimen.dateCollected);
