@@ -18,7 +18,15 @@ Bahmni.Common.Obs.ObservationMapper = function () {
         $.each(bahmniObservations, function (i, bahmniObservation) {
             var conceptConfig = bahmniObservation.formFieldPath ? [] : allConceptsConfig[bahmniObservation.concept.name] || [];
             var observation = new Bahmni.Common.Obs.Observation(bahmniObservation, conceptConfig, $translate);
-            if (observation.groupMembers && observation.groupMembers.length >= 0) {
+            if (observation.groupMembers && observation.groupMembers.length >= 0 && observation.concept.name === $translate.instant("CHIEF_COMPLAINT_DATA_CONCEPT_NAME_KEY")) {
+                if (observation.groupMembers[0].value.name !== $translate.instant("CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_KEY")) {
+                    observation.value = $translate.instant("CHIEF_COMPLAINT_DATA_WITHOUT_OTHER_CONCEPT_TEMPLATE_KEY", {chiefComplaint: observation.groupMembers[0].value.name, duration: observation.groupMembers[1].value, unit: observation.groupMembers[2].value.name});
+                } else {
+                    observation.value = $translate.instant("CHIEF_COMPLAINT_DATA_OTHER_CONCEPT_TEMPLATE_KEY", {chiefComplaint: observation.groupMembers[0].value.name, chiefComplaintText: observation.groupMembers[1].value, duration: observation.groupMembers[2].value, unit: observation.groupMembers[3].value.name});
+                }
+                observation.groupMembers = [];
+            }
+            if (observation.groupMembers && observation.groupMembers.length >= 0 && observation.concept.name !== $translate.instant("CHIEF_COMPLAINT_DATA_CONCEPT_NAME_KEY")) {
                 observation.groupMembers = mapObservations(observation.groupMembers, allConceptsConfig, dontSortByObsDateTime, $translate);
             }
             mappedObservations.push(observation);
