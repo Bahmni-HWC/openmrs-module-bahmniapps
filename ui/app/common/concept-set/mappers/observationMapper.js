@@ -4,28 +4,18 @@ Bahmni.ConceptSet.ObservationMapper = function () {
     var conceptMapper = new Bahmni.Common.Domain.ConceptMapper();
     var self = this;
   // TODO : Shouldn't this be in clinical module. Don't see a reason for this to be in concept-set code - Shruthi
-    this.getObservationsForView = function (
-    observations,
-    conceptSetConfig,
-    $translate
-  ) {
+    this.getObservationsForView = function (observations, conceptSetConfig, $translate) {
         return internalMapForDisplay(observations, conceptSetConfig, $translate);
     };
-    var internalMapForDisplay = function (
-      observations,
-      conceptSetConfig,
-      $translate
-    ) {
+    var internalMapForDisplay = function (observations, conceptSetConfig, $translate) {
         var observationsForDisplay = [];
         _.forEach(observations, function (savedObs) {
             savedObs.value = getObsValue(savedObs);
-
             if (isConceptNameChiefComplaintData(observations, $translate)) {
                 savedObs.value = self.getGridObservationDisplayValue(savedObs, $translate);
                 observationsForDisplay = observationsForDisplay.concat(createObservationForDisplay(savedObs, savedObs.concept, $translate));
                 return observationsForDisplay;
             }
-
             if (savedObs.concept.conceptClass && savedObs.concept.conceptClass === Bahmni.Common.Constants.conceptDetailsClassName || savedObs.concept.conceptClass.name === Bahmni.Common.Constants.conceptDetailsClassName) {
                 if (isConceptNameChiefComplaintData(observations, $translate)) {
                     savedObs.value = self.getGridObservationDisplayValue(savedObs, $translate);
@@ -106,46 +96,19 @@ Bahmni.ConceptSet.ObservationMapper = function () {
         });
     };
 
-    var mapObservation = function (
-    concept,
-    savedObs,
-    conceptSetConfig,
-    parentConcept
-  ) {
+    var mapObservation = function (concept, savedObs, conceptSetConfig, parentConcept) {
         var obs = null;
         if (savedObs && (savedObs.isObservation || savedObs.isObservationNode)) {
             return savedObs;
         }
-        var mappedGroupMembers = concept.set
-      ? mapObservationGroupMembers(
-          savedObs ? savedObs.groupMembers : [],
-          concept,
-          conceptSetConfig
-        )
-      : [];
+        var mappedGroupMembers = concept.set ? mapObservationGroupMembers(savedObs ? savedObs.groupMembers : [], concept, conceptSetConfig) : [];
 
-        if (
-      concept.conceptClass.name ===
-      Bahmni.Common.Constants.conceptDetailsClassName
-    ) {
-            obs = newObservationNode(
-        concept,
-        savedObs,
-        conceptSetConfig,
-        mappedGroupMembers
-      );
+        if (concept.conceptClass.name === Bahmni.Common.Constants.conceptDetailsClassName) {
+            obs = newObservationNode(concept, savedObs, conceptSetConfig, mappedGroupMembers);
         } else {
-            obs = newObservation(
-        concept,
-        savedObs,
-        conceptSetConfig,
-        mappedGroupMembers
-      );
-            new Bahmni.ConceptSet.MultiSelectObservations(conceptSetConfig).map(
-        mappedGroupMembers
-      );
+            obs = newObservation(concept, savedObs, conceptSetConfig, mappedGroupMembers);
+            new Bahmni.ConceptSet.MultiSelectObservations(conceptSetConfig).map(mappedGroupMembers);
         }
-
         mapTabularObs(mappedGroupMembers, concept, obs, conceptSetConfig);
         return obs;
     };
@@ -213,7 +176,7 @@ Bahmni.ConceptSet.ObservationMapper = function () {
         return concept.datatype && concept.datatype.name;
     };
 
-// tODO : remove conceptUIConfig
+  // tODO : remove conceptUIConfig
     var newObservation = function (concept, savedObs, conceptSetConfig, mappedGroupMembers) {
         var observation = buildObservation(concept, savedObs, mappedGroupMembers);
         var obs = new Bahmni.ConceptSet.Observation(observation, savedObs, conceptSetConfig, mappedGroupMembers);
@@ -223,7 +186,7 @@ Bahmni.ConceptSet.ObservationMapper = function () {
         return obs;
     };
 
-// TODO : remove conceptUIConfig
+  // TODO : remove conceptUIConfig
     var newObservationNode = function (concept, savedObsNode, conceptSetConfig, mappedGroupMembers) {
         var observation = buildObservation(concept, savedObsNode, mappedGroupMembers);
         return new Bahmni.ConceptSet.ObservationNode(observation, savedObsNode, conceptSetConfig, concept);
