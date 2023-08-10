@@ -101,7 +101,7 @@ Bahmni.ConceptSet.ObservationMapper = function () {
         if (savedObs && (savedObs.isObservation || savedObs.isObservationNode)) {
             return savedObs;
         }
-        var mappedGroupMembers = concept.set ? mapObservationGroupMembers(savedObs ? savedObs.groupMembers : [], concept, conceptSetConfig): [];
+        var mappedGroupMembers = concept.set ? mapObservationGroupMembers(savedObs ? savedObs.groupMembers : [], concept, conceptSetConfig) : [];
 
         if (concept.conceptClass.name === Bahmni.Common.Constants.conceptDetailsClassName) {
             obs = newObservationNode(concept, savedObs, conceptSetConfig, mappedGroupMembers);
